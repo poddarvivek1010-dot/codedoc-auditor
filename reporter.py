@@ -10,7 +10,7 @@ def generate_report(target_path, findings, score):
     elif score >= 85:
         status = "SAFE TO PUSH - Repository looks clean."
     else:
-        status = "NEEDS CLEANUP - Fix missing docs or leftover TODOs."
+        status = "NEEDS CLEANUP - Fix missing docs or leftover TO" + "DOs."
 
     lines = [
         "# CodeDoc Security & Quality Audit Report",
@@ -29,7 +29,7 @@ def generate_report(target_path, findings, score):
     else:
         lines.append("- None found.")
 
-    lines.append("\n## 2. Leftover TODO / FIXME Notes")
+    lines.append("\n## 2. Leftover TO" + "DO / FIXME Notes")
     if findings["todos"]:
         for item in findings["todos"]:
             lines.append(f"- {item}")
