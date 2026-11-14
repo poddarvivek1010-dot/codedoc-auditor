@@ -43,7 +43,7 @@ def scan_directory(target_path):
                                 findings["secrets"].append(
                                     f"{file_name} (Line {line_num}): Potential {label}"
                                 )
-                        if todo_tag in line or fixme_tag in line:
+                        if file_name.lower() != "readme.md" and (todo_tag in line or fixme_tag in line):
                             findings["todos"].append(
                                 f"{file_name} (Line {line_num}): {line.strip()}"
                             )
