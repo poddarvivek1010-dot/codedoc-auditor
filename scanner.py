@@ -17,6 +17,9 @@ def scan_directory(target_path):
         "has_readme": False,
     }
 
+    todo_tag = "TO" + "DO"
+    fixme_tag = "FIX" + "ME"
+
     for root, _, files in os.walk(target_path):
         if ".git" in root or "__pycache__" in root:
             continue
@@ -40,7 +43,7 @@ def scan_directory(target_path):
                                 findings["secrets"].append(
                                     f"{file_name} (Line {line_num}): Potential {label}"
                                 )
-                        if "TODO" in line or "FIXME" in line:
+                        if todo_tag in line or fixme_tag in line:
                             findings["todos"].append(
                                 f"{file_name} (Line {line_num}): {line.strip()}"
                             )
