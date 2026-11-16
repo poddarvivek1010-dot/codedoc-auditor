@@ -217,3 +217,10 @@ with right_col:
                     st.write(f"• **Environment:** {d}")
                 for t in todos_found:
                     st.write(f"• **Tag:** {t}")
+
+st.markdown("""
+    <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid #21262D; text-align: center; color: #8B949E; font-size: 0.85rem;">
+        Built by <strong style="color: #E6EDF3;">Vivek Kumar</strong> &nbsp;•&nbsp;
+        <a href="https://github.com" target="_blank" style="color: #58A6FF; text-decoration: none;">View Source on GitHub</a>
+    </div>
+""", unsafe_allow_html=True)
