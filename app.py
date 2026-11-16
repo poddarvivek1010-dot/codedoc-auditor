@@ -1,3 +1,4 @@
+from syntax_checker import check_python_syntax
 import streamlit as st
 import re
 from scanner import SECRET_PATTERNS
@@ -107,6 +108,7 @@ with right_col:
 
     active_code = code_input.strip()
     lines = code_input.splitlines() if active_code else []
+    syntax_err = check_python_syntax(code_input) if active_code else None
     secrets_found = []
     todos_found = []
     debug_found = []
@@ -163,9 +165,12 @@ with right_col:
         hyg_pts = max(0, 15 - (len(todos_found) * 5))
         com_pts = 10 if has_comments else 0
         doc_pts = (10 if has_readme else 0) + (5 if has_gitignore else 0)
-        total_score = sec_pts + env_pts + hyg_pts + com_pts + doc_pts
+        syn_pts = 0 if syntax_err else 20
+        total_score = max(0, sec_pts + env_pts + hyg_pts + com_pts + doc_pts - (20 if syntax_err else 0))
 
-        if secrets_found:
+        if syntax_err:
+            verdict, accent = f"Blocked — Syntax Error ({syntax_err})", "#F85149"
+        elif secrets_found:
             verdict = "Blocked — Exposed Credentials Detected"
             accent = "#F85149"
         elif total_score >= 85:
