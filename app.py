@@ -7,7 +7,7 @@ st.set_page_config(page_title="CodeDoc Auditor", page_icon="🛡️")
 st.title("🛡️ CodeDoc Security & Hygiene Auditor")
 st.write("Paste your Python, JavaScript, or `.env` code below to check for exposed API keys, passwords, and leftover tags before pushing to GitHub.")
 
-code_input = st.text_area("Paste Code Here:", height=220, placeholder='api_key = "AIzaSy..."')
+code_input = st.text_area("Paste Code Here:", height=220, placeholder='print("Hello, World!")')
 has_readme = st.checkbox("My repository includes a README.md file", value=False)
 
 if st.button("Run Security Audit"):
