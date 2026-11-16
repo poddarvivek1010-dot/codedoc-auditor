@@ -5,10 +5,9 @@ from scanner import SECRET_PATTERNS
 st.set_page_config(page_title="CodeDoc Auditor", page_icon="🛡️")
 
 st.title("🛡️ CodeDoc Security & Hygiene Auditor")
-st.write("Paste your Python, JavaScript, or `.env` code below to check for exposed API keys, passwords, and leftover tags before pushing to GitHub.")
+st.write("Paste your Python, JavaScript, or `.env` code below to check for exposed API keys, passwords, and unresolved tags before pushing to GitHub.")
 
 code_input = st.text_area("Paste Code Here:", height=220, placeholder='print("Hello, World!")')
-has_readme = st.checkbox("My repository includes a README.md file", value=False)
 
 if st.button("Run Security Audit"):
     if not code_input.strip():
@@ -16,7 +15,6 @@ if st.button("Run Security Audit"):
     else:
         secrets_found = []
         todos_found = []
-        deductions = []
         todo_tag = "TO" + "DO"
         fixme_tag = "FIX" + "ME"
 
@@ -27,43 +25,40 @@ if st.button("Run Security Audit"):
             if todo_tag in line or fixme_tag in line:
                 todos_found.append(f"Line {line_num}: `{line.strip()}`")
 
-        score = 100
+        # Calculate points per category (Total = 100 pts)
+        secrets_pts = max(0, 80 - (len(secrets_found) * 40))
+        hygiene_pts = max(0, 20 - (len(todos_found) * 5))
+        score = secrets_pts + hygiene_pts
 
-        if secrets_found:
-            penalty = len(secrets_found) * 40
-            score -= penalty
-            deductions.append(f"-{penalty} pts: {len(secrets_found)} exposed secret(s) detected — move keys to a `.env` file.")
-
-        if todos_found:
-            penalty = len(todos_found) * 5
-            score -= penalty
-            deductions.append(f"-{penalty} pts: {len(todos_found)} unresolved code note(s) — resolve or remove before release.")
-
-        if not has_readme:
-            score -= 15
-            deductions.append("-15 pts: Missing `README.md` — add project documentation before pushing.")
-
-        score = max(0, score)
-
-        st.subheader(f"Repository Health Score: {score} / 100")
+        st.subheader(f"Code Security Score: {score} / 100")
 
         if secrets_found:
             st.error("CRITICAL RISK: Exposed Secrets Found! Do NOT push to GitHub.")
-            for item in secrets_found:
-                st.write(f"- 🚨 {item}")
         elif score == 100:
-            st.success("PERFECT SCORE (100/100): Clean code, zero secrets, and documented!")
-        elif score >= 85:
-            st.success("SAFE TO PUSH: Code is secure, with minor improvements suggested below.")
+            st.success("PERFECT SCORE (100/100): Clean code with zero exposed secrets or leftover tags — safe to push!")
         else:
-            st.warning("NEEDS CLEANUP: Fix the issues listed below before pushing.")
+            st.warning("NEEDS CLEANUP: Fix the minor notes listed below before pushing.")
 
-        if deductions:
-            st.markdown("### 📊 Score Breakdown & How to Reach 100/100")
-            for note in deductions:
-                st.write(note)
+        # --- Visual Audit Checklist ---
+        st.markdown("### 📋 Audit Checklist & Points Breakdown")
+
+        if not secrets_found:
+            st.write(f"✅ **No Exposed API Keys or Passwords** (+{secrets_pts}/80 pts)")
+        else:
+            st.write(f"❌ **Exposed Secrets Detected ({len(secrets_found)} found)** (+{secrets_pts}/80 pts) — *Move keys to a `.env` file.*")
+
+        if not todos_found:
+            st.write(f"✅ **No Unresolved TODO / FIXME Tags** (+{hygiene_pts}/20 pts)")
+        else:
+            st.write(f"⚠️ **Leftover Code Notes ({len(todos_found)} found)** (+{hygiene_pts}/20 pts) — *Resolve or remove before release.*")
+
+        # --- Detailed Line Warnings (if any) ---
+        if secrets_found:
+            st.markdown("### 🚨 Secret Leak Details")
+            for item in secrets_found:
+                st.write(f"- {item}")
 
         if todos_found:
-            st.markdown("### ⚠️ Leftover Code Notes")
+            st.markdown("### ⚠️ Leftover Note Details")
             for item in todos_found:
                 st.write(f"- {item}")
