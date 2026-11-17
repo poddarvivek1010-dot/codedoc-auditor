@@ -1,6 +1,6 @@
 # CodeDoc Auditor
 
-🔗 **Live Web Console:** [Launch CodeDoc Auditor](YOUR_STREAMLIT_URL)
+🔗 **Live Web Console:** [Launch CodeDoc Auditor](https://streamlit.app)
 
 A Python static auditor that scans code for exposed API keys, hardcoded passwords, syntax errors, and missing documentation. 
 
