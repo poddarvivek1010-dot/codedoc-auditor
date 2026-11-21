@@ -229,3 +229,58 @@ st.markdown("""
         <a href="https://github.com" target="_blank" style="color: #58A6FF; text-decoration: none;">View Source on GitHub</a>
     </div>
 """, unsafe_allow_html=True)
+
+# --- User Feedback & Reviews Section ---
+import json
+import os
+import datetime
+import streamlit as st
+
+st.divider()
+st.subheader("💬 User Feedback & Reviews")
+
+REVIEWS_FILE = "reviews.json"
+
+def load_reviews():
+    if os.path.exists(REVIEWS_FILE):
+        try:
+            with open(REVIEWS_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return []
+    return []
+
+def save_review(name, rating, comment):
+    reviews = load_reviews()
+    reviews.insert(0, {
+        "name": name.strip() or "Anonymous Developer",
+        "rating": rating,
+        "comment": comment.strip(),
+        "date": datetime.date.today().strftime("%b %d, %Y")
+    })
+    with open(REVIEWS_FILE, "w", encoding="utf-8") as f:
+        json.dump(reviews, f, indent=2)
+
+with st.form("feedback_form", clear_on_submit=True):
+    col1, col2 = st.columns([2, 1])
+    with col1:
+        user_name = st.text_input("Your Name (optional)", placeholder="e.g., Rahul")
+    with col2:
+        rating = st.selectbox("Rating", [5, 4, 3, 2, 1], format_func=lambda x: "⭐" * x)
+    user_comment = st.text_area("Leave a review or suggestion", placeholder="How did CodeDoc Auditor help you today?", height=90)
+    if st.form_submit_button("Post Review"):
+        if user_comment.strip():
+            save_review(user_name, rating, user_comment)
+            st.success("Thank you! Your review has been posted.")
+        else:
+            st.warning("Please write a short comment before posting.")
+
+all_reviews = load_reviews()
+if all_reviews:
+    st.caption(f"Showing {len(all_reviews)} community review(s)")
+    for rev in all_reviews[:10]:
+        with st.container(border=True):
+            st.markdown(f"**{rev['name']}** — {'⭐' * rev['rating']}  ·  *{rev['date']}*")
+            st.write(rev["comment"])
+else:
+    st.info("No reviews yet. Be the first to share feedback!")
